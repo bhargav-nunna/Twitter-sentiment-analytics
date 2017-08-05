@@ -18,6 +18,12 @@ count_all = Counter()
 terms_only = []
 com = defaultdict(lambda : defaultdict(int))
 
+## co-occurence for a search word
+search_word = 'president' # pass a term as a command-line argument
+count_search = Counter()
+
+word_freq = []
+
 for tokenList in listOfTokensList:
 	terms_all = [term for term in tokenList]
 	terms_stop = [term for term in tokenList if term not in stop]
@@ -30,6 +36,9 @@ for tokenList in listOfTokensList:
 	# mind the ((double brackets))
 	# startswith() takes a tuple (not a list) if 
 	# we pass a list of inputs
+	if search_word in terms_only:
+			count_search.update(terms_only)
+
 	# Build co-occurrence matrix
 	for i in range(len(terms_only)-1):
 		for j in range(i+1, len(terms_only)):
@@ -38,8 +47,12 @@ for tokenList in listOfTokensList:
 				com[w1][w2] += 1
 	terms_bigram = bigrams(terms_only)
 	count_all.update(terms_only)
+
+print("Top 10 most occured terms:")
 print(count_all.most_common(10))
- 
+print("Top 20 Co-occurrence for %s:" % search_word)
+print(count_search.most_common(20))
+
 com_max = []
 # For each term, look for the most common co-occurrent terms
 for t1 in com:
@@ -48,17 +61,9 @@ for t1 in com:
         com_max.append(((t1, t2), t2_count))
 # Get the most frequent co-occurrences
 terms_max = sorted(com_max, key=operator.itemgetter(1), reverse=True)
+print("Top 5 co-occurences:")
 print(terms_max[:5])
-    
-## co-occurence for a search word
-#search_word = sys.argv[1] # pass a term as a command-line argument
-#count_search = Counter()
-#for line in f:
-#    tweet = json.loads(line)
-#    terms_only = [term for term in preprocess(tweet['text']) 
-#                  if term not in stop 
-#                  and not term.startswith(('#', '@'))]
-#    if search_word in terms_only:
-#        count_search.update(terms_only)
-#print("Co-occurrence for %s:" % search_word)
-#print(count_search.most_common(20))"""
+
+def getWordFreq():
+	world_freq = count_all.most_common(20)
+	return world_freq
